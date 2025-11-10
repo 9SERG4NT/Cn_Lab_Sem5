@@ -17,9 +17,7 @@ This table outlines all the practicals and their corresponding experiments as pe
 | **5** | Implement Sliding Window Protocols. |
 | **6** | Implement Traffic shaping Algorithms. |
 | **7** | Implement Distance Vector Algorithm. |
-| **8** | *(Your Experiment 8 Title)* |
-| **9** | *(Your Experiment 9 Title)* |
-| **10** | *(Your Experiment 10 Title)* |
+
 
 ---
 
@@ -40,5 +38,7 @@ gcc program_name.c -o program -lm
 
 # Run the program
 ./program
-
-## Author - @9SERG4NT
+```
+## Author  
+@9SERG4NT
+Sumukh Chourasia 
