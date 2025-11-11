@@ -50,16 +50,23 @@ int main() {
     printf("Connection established with client.\n");
 
     // Receive filename first
-    if (recv(new_socket, filename, sizeof(filename), 0) <= 0) {
+    ssize_t filename_bytes;
+    // Reserve 1 byte for null terminator
+    filename_bytes = recv(new_socket, filename, sizeof(filename) - 1, 0); 
+    if (filename_bytes <= 0) {
         perror("Failed to receive filename");
         close(new_socket);
         close(server_fd);
         exit(1);
     }
-    printf("📥 Receiving file: %s\n", filename);
+    
+    // **FIX: Add null terminator to fix the 'sample.txt0' bug**
+    filename[filename_bytes] = '\0'; 
+    
+    printf("Receiving file: %s\n", filename);
 
     // Open file for writing
-    fp = fopen(filename, "wb");
+    fp = fopen(filename, "wb"); // "wb" = write binary
     if (fp == NULL) {
         perror("File open failed");
         close(new_socket);
@@ -76,9 +83,31 @@ int main() {
     if (bytes_received < 0)
         perror("Receive failed");
     else
-        printf("✅ File received successfully.\n");
+        printf("File received successfully.\n");
 
-    fclose(fp);
+    fclose(fp); // Close the file after writing
+
+    // --- NEW CODE: Read and print file content ---
+    printf("\n--- Displaying content of %s ---\n", filename);
+    fp = fopen(filename, "r"); // Re-open in read mode ("r")
+    if (fp == NULL) {
+        perror("Failed to re-open file for reading");
+    } else {
+        // Read and print contents line by line
+        // We can re-use the 'buffer'
+        while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+            printf("%s", buffer); // Print the line
+        }
+        fclose(fp); // Close the file after reading
+        
+        // Add a newline if the file didn't end with one, for cleaner output
+        if (buffer[strlen(buffer) - 1] != '\n') {
+            printf("\n");
+        }
+        
+    }
+    // --- End of new code ---
+
     close(new_socket);
     close(server_fd);
 
